@@ -1,0 +1,2 @@
+$.getScript("fetchcourse.js");
+
