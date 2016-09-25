@@ -4,3 +4,9 @@ the calls that the website uses to ask for course data and returns it in a simpl
 
 Available under the [MIT License](LICENSE.md).
 
+### API
+(TODO)
+
+### Limitations
+This library does not support fetching records from before 1999.
+
