@@ -6,7 +6,7 @@
  */
 
 // Have NodeJS load jQuery
-if (typeof 'window' !== undefined) {
+if (typeof 'window' === undefined) {
     $ = require('jquery');
 }
 
@@ -21,7 +21,7 @@ const Quarter = Object.freeze({
     FALL: 3,
 });
 
-const SubjectAreas = Object.freeze({
+const SubjectArea = Object.freeze({
     ANTH: ['ANTH', 'Anthropology'],
     ARBC: ['ARBC', 'Arabic'],
     ARLC: ['ARLC', 'Arabic Literature and Cultures'],
@@ -144,7 +144,7 @@ const ClassType = Object.freeze([
     ['W&S', 'Workshop & screening'],
 ]);
 
-const Location = Object.freeze({
+const CourseLocation = Object.freeze({
     ANDHL: ['ANDHL', 'A. Gary Anderson Hall (ANDHL)'],
     BOYHL: ['BOYHL', 'Alfred M. Boyce Hall (BOYHL)'],
     ARTS: ['ARTS', 'Arts Building (ARTS)'],
@@ -270,6 +270,40 @@ function combineObjects(first, second) {
     return combined;
 }
 
+// Turns a date into a quarter code
+function getQuarterCodeFromDate(date) {
+    var quarter;
+
+    // getMonth() returns 0-11 inclusive
+    switch (date.getMonth()) {
+        case 5:
+        case 6:
+        case 7:
+            // June to August is summer quarter
+            quarter = Quarter.SUMMER;
+            break;
+        case 8:
+        case 9:
+        case 10:
+            // September to November is fall quarter
+            quarter = Quarter.FALL;
+            break;
+        case 11:
+        case 0:
+        case 1:
+            // December to February is winter quarter
+            quarter = Quarter.WINTER;
+            break;
+        case 2:
+        case 3:
+        case 4:
+            // March to May is spring quarter
+            quarter = Quarter.SPRING;
+    }
+
+    return getQuarterCode(quarter, date.getFullYear());
+}
+
 // Turn a year and a quarter enum into a quarter code for the form
 function getQuarterCode(quarter, year) {
     var quarterLetter;
@@ -378,39 +412,106 @@ function submitRequest(params, callback) {
 // Externals //
 ///////////////
 
-function getRawCourseHTML(quarter, year, subjectArea, courseTitle, instructor, courseNumber, classType, daysOfWeek, startHour, courseStatus, courseRange, locationValue, breadthCourse, graduateQuant) {
-    var params = {
-        'drp_term': getQuarterCode(quarter, year),
-        'drp_subjectArea': subjectArea[0],
-        'txtbx_courseTitle': courseTitle,
-        'txt_instructor': instructor,
-        'txtbx_courseNumber': courseNumber,
-        'drp_startTime': getTimeCode24Hour(startHour),
-        'drp_fullOpenClasses': courseStatus + '',
-        'drp_courseRange': courseRange[0],
-        'drp_location': locationValue[0],
-        'drp_breadth': breadthCourse,
-        'cbGraduateQuant': graduateQuant,
+// Builder class for creating a query
+function CourseQuery() {
+    this.params = combineObjects(defaultPostFields, {
+        'drp_term': getQuarterCodeFromDate(new Date()),
+        'drp_subjectArea': '',
+        'txtbx_courseTitle': '',
+        'txt_instructor': '',
+        'txtbx_courseNumber': '',
+        'drp_startTime': '',
+        'drp_fullOpenClasses': '',
+        'drp_courseRange': '',
+        'drp_location': '',
+        'drp_breadth': '',
+        'cbGraduateQuant': false,
+    });
+
+    this.setTerm = function(quarter, year) {
+        this.params['drp_term'] = getQuarterCode(quarter, year);
     };
 
-    getDaysOfTheWeek(daysOfWeek, params);
+    this.setSubjectArea = function(subjectArea) {
+        this.params['drp_subjectArea'] = subjectArea[0];
+    };
+
+    this.setCourseTitle = function(courseTitle) {
+        this.params['txtbx_courseTitle'] = courseTitle;
+    };
+
+    this.setInstructor = function(instructor) {
+        this.params['txt_instructor'] = instructor;
+    };
+
+    this.setCourseNumber = function(courseNumber) {
+        this.params['txtbx_courseNumber'] = courseNumber + '';
+    };
+
+    this.setStartTime = function(startHour) {
+        this.params['drp_startTime'] = getTimeCode24Hour(startHour);
+    };
+
+    this.setCourseStatus = function(courseStatus) {
+        this.params['drp_fullOpenClasses'] = courseStatus + '';
+    };
+
+    this.setCourseRange = function(courseRange) {
+        this.params['drp_courseRange'] = courseRange[0];
+    };
+
+    this.setLocation = function(locationEnum) {
+        this.params['drp_location'] = locationEnum[0];
+    };
+
+    this.setBreadth = function(breadthCourse) {
+        this.params['drp_breadth'] = breadthCourse;
+    };
+
+    this.setGraduateQuantitativeMethod = function(value) {
+        this.params['cbGraduateQuant'] = Boolean(value);
+    };
+
+    this.setDaysOfTheWeek = function(daysOfWeek) {
+        getDaysOfTheWeek(daysOfWeek, this.params);
+    };
 }
 
-function getCourses(quarter, year, subjectArea, courseNumber, classType, daysOfWeek, startHour) {
+// Class to describe one course result
+function Course() {
     // TODO
-    return null;
+
+    this.toString = function() {
+    };
+}
+
+function getRawCourseHTML(query, callback) {
+    submitRequest(query.params, callback);
+}
+
+function getCourses(query, callback) {
+    getRawCourseHTML(query, function(data) {
+        var courses = [];
+        // TODO parse html
+
+        callback(courses);
+    });
 }
 
 if (typeof exports !== 'undefined') {
-    // Enums and objects
+    // Enums
     exports.Quarter = Quarter;
-    exports.SubjectAreas = SubjectAreas;
+    exports.SubjectArea = SubjectArea;
     exports.ClassType = ClassType;
-    exports.Location = Location;
+    exports.CourseLocation = CourseLocation;
     exports.CourseStatus = CourseStatus;
     exports.CourseRange = CourseRange;
     exports.DayOfWeek = DayOfWeek;
     exports.BreadthCourse = BreadthCourse;
+
+    // Objects
+    exports.CourseQuery = CourseQuery;
+    exports.Course = Course;
 
     // Functions
     exports.getRawCourseHTML = getRawCourseHTML;
