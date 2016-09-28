@@ -5,6 +5,9 @@ build
 *.so
 *.dylib
 
+# Debugging
+core.*
+vgcore*
 
 # Misc
 .*.swp

@@ -13,6 +13,7 @@ extern "C" {
 #endif /* __cplusplus */
 
 #include <stdbool.h>
+#include <stddef.h>
 
 enum quarter {
 	FALL_QUARTER,
@@ -288,7 +289,7 @@ struct course_query {
 	bool days[6];
 };
 
-struct course_result {
+struct course {
 	struct course_result *next;
 
 	/* Course number */
@@ -339,9 +340,15 @@ struct course_result {
 	const char *catalog_description;
 };
 
+struct course_results {
+	struct course *courses;
+	size_t length;
+};
+
+char *get_raw_ucr_courses_request(const struct course_query *query);
 char *get_raw_ucr_courses_html(const struct course_query *query);
-struct course_result *get_ucr_courses(const struct course_query *query);
-void destroy_course_result(struct course_result *results);
+struct course_results *get_ucr_courses(const struct course_query *query);
+void destroy_course_result(struct course_results *results);
 
 #ifdef __cplusplus
 }
