@@ -6,13 +6,13 @@
  */
 
 #ifndef __UCR_COURSE_H
-# define __UCR_COURSE_H
+#define __UCR_COURSE_H
 
-# ifdef __cplusplus
+#ifdef __cplusplus
 extern "C" {
-# endif /* __cplusplus */
+#endif /* __cplusplus */
 
-# include <stdbool.h>
+#include <stdbool.h>
 
 enum quarter {
 	FALL_QUARTER,
@@ -197,6 +197,13 @@ enum course_location {
 	BUILDING_CHUNG
 };
 
+enum course_range {
+	RANGE_LOWER_DIVISION,
+	RANGE_UPPER_DIVISION,
+	RANGE_GRADUATE,
+	RANGE_POST_DOC
+};
+
 enum breadth_course {
 	BREADTH_E_S_EC,
 	BREADTH_E_S_AN,
@@ -262,6 +269,9 @@ struct course_query {
 	/* Course status */
 	enum course_status course_status;
 
+	/* Course range */
+	enum course_range course_range;
+
 	/* Class type */
 	enum class_type class_type;
 
@@ -278,8 +288,8 @@ struct course_query {
 	bool days[6];
 };
 
-struct result {
-	struct result *next;
+struct course_result {
+	struct course_result *next;
 
 	/* Course number */
 	const char *course_number;
@@ -329,9 +339,13 @@ struct result {
 	const char *catalog_description;
 };
 
-# ifdef __cplusplus
+char *get_raw_ucr_courses_html(const struct course_query *query);
+struct course_result *get_ucr_courses(const struct course_query *query);
+void destroy_course_result(struct course_result *results);
+
+#ifdef __cplusplus
 }
-# endif /* __cplusplus */
+#endif /* __cplusplus */
 
 #endif /* __UCR_COURSE_H */
 
