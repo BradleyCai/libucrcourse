@@ -1,21 +1,15 @@
 # Artifacts
-*.min.js
+build
+*.o
+*.a
+*.so
+*.dylib
 
-# NodeJS
-.npm
-node_modules
-jspm_packages
-
-# Logs
-logs
-*.log
-npm-debug.log*
-.node_repl_history
 
 # Misc
 .*.swp
 *~
 *#
 *.bak
-.tern-project
+.ycm_extra_conf.py*
 
