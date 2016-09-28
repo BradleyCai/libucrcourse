@@ -8,9 +8,9 @@
 #include <stdlib.h>
 
 #include "html_scraper.h"
-#include "query.h"
-#include "ucrcourse.h"
+#include "params.h"
 #include "request.h"
+#include "ucrcourse.h"
 
 char *get_raw_ucr_courses_request(const struct course_query *query)
 {

@@ -1,5 +1,5 @@
 /*
- * query.c
+ * params.c
  *
  * Copyright (C) 2016 Ammon Smith and Bradley Cai
  * Available for use under the terms of the MIT License.
@@ -8,9 +8,10 @@
 #include <assert.h>
 #include <stdlib.h>
 #include <stdio.h>
+#include <time.h>
 
 #include "constants.h"
-#include "query.h"
+#include "params.h"
 
 static void set_term_code(char *buf, enum quarter quarter, unsigned short year)
 {
@@ -34,6 +35,41 @@ static void set_term_code(char *buf, enum quarter quarter, unsigned short year)
 	}
 
 	sprintf(buf, "%02u%c", year % 100u, quarter_letter);
+}
+
+static void set_default_term_code(char *buf)
+{
+	time_t now = time(NULL);
+	struct tm *tm = localtime(&now);
+	enum quarter quarter;
+
+	switch (tm->tm_mon) {
+	case 6:
+	case 7:
+	case 8:
+		/* Summer - June to August */
+		quarter = SUMMER_QUARTER;
+		break;
+	case 9:
+	case 10:
+	case 11:
+		/* Fall - September to November */
+		quarter = FALL_QUARTER;
+		break;
+	case 12:
+	case 1:
+	case 2:
+		/* Winter - December to February */
+		quarter = WINTER_QUARTER;
+		break;
+	case 3:
+	case 4:
+	case 5:
+		/* Spring - March to May */
+		quarter = SPRING_QUARTER;
+	}
+
+	set_term_code(buf, quarter, tm->tm_year);
 }
 
 static void set_course_status(char *buf, unsigned int value)

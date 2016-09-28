@@ -1,12 +1,12 @@
 /*
- * query.h
+ * params.h
  *
  * Copyright (C) 2016 Ammon Smith and Bradley Cai
  * Available for use under the terms of the MIT License.
  */
 
-#ifndef __QUERY_H
-#define __QUERY_H
+#ifndef __PARAMS_H
+#define __PARAMS_H
 
 #include "ucrcourse.h"
 
@@ -28,5 +28,5 @@ struct query_params {
 int query_to_params(struct query_params *params, const struct course_query *query);
 char *params_to_string(const struct query_params *params);
 
-#endif /* __QUERY_H */
+#endif /* __PARAMS_H */
 
