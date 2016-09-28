@@ -104,6 +104,16 @@ char *query_to_string(const struct course_query *query)
 	struct string_buffer string;
 	char buf[6];
 
+	add_param(&string, "__LASTFOCUS", "");
+	add_param(&string, "__EVENTTARGET", "");
+	add_param(&string, "__EVENTARGUMENT", "");
+	/* add_param(&string, "__VIEWSTATE", " TODO"); */
+	add_param(&string, "__SCROLLPOSITIONX", "0");
+	add_param(&string, "__SCROLLPOSITIONY", "0");
+	/* add_param(&string, "__EVENTVALIDATION", "TODO"); */
+	add_param(&string, "__ASYNCPOST", "true");
+	add_param(&string, "btn_search", " Search >>");
+
 	set_term_code(buf, query->quarter, query->year);
 	add_param(&string, "drp_term", buf);
 	add_param(&string, "drp_subjectArea", SUBJECT_AREAS[query->subject_area]);
@@ -126,6 +136,6 @@ char *query_to_string(const struct course_query *query)
 	if (query->days[FRIDAY]) add_param(&string, "chkbx_fri", "on");
 	if (query->days[SATURDAY]) add_param(&string, "chkbx_sat", "on");
 
-	return NULL;
+	return string.data;
 }
 
