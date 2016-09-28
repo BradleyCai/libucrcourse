@@ -387,6 +387,7 @@ function getDaysOfTheWeek(daysOfWeek, params) {
 // Form submission //
 /////////////////////
 
+const defaultPostUrl = 'http://student08.ucr.edu/em/classes/ScheduleNew/Index.aspx?browse=Browse';
 const defaultPostPath = '/em/classes/ScheduleNew/Index.aspx?browse=Browse';
 const defaultPostFields = Object.freeze({
     '__LASTFOCUS': '',
@@ -402,9 +403,18 @@ const defaultPostFields = Object.freeze({
 
 function submitRequest(params, callback) {
     params = combineObjects(defaultPostFields, params);
-    $.post(defaultPostPath, params, function(data) {
-        console.log(data);
-        callback(data);
+    $.ajax({
+        type: 'POST',
+        url: defaultPostUrl,
+        crossDomain: true,
+        data: params,
+        // dataType: null,
+        success: function(responseData, textStatus, jqXHR) {
+            callback(responseData);
+        },
+        error: function(responseData, textStatus, errorThrown) {
+            console.log('POST failed: ' + errorThrown);
+        },
     });
 }
 
