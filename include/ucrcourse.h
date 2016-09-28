@@ -130,7 +130,8 @@ enum subject_area {
 	SUBJECT_STAT,
 	SUBJECT_TFDP,
 	SUBJECT_URST,
-	SUBJECT_VNM
+	SUBJECT_VNM,
+	SUBJECT_NONE
 };
 
 enum class_type {
@@ -157,7 +158,8 @@ enum class_type {
 	CLASS_ACT,
 	CLASS_DEM,
 	CLASS_ODL,
-	CLASS_W_S
+	CLASS_W_S,
+	CLASS_NONE
 };
 
 enum course_location {
@@ -195,14 +197,16 @@ enum course_location {
 	BUILDING_ULB,
 	BUILDING_UNLH,
 	BUILDING_UV,
-	BUILDING_CHUNG
+	BUILDING_CHUNG,
+	BUILDING_NONE
 };
 
 enum course_range {
 	RANGE_LOWER_DIVISION,
 	RANGE_UPPER_DIVISION,
 	RANGE_GRADUATE,
-	RANGE_POST_DOC
+	RANGE_POST_DOC,
+	RANGE_NONE
 };
 
 enum breadth_course {
@@ -244,7 +248,8 @@ enum breadth_course {
 	BREADTH_H_N_BS,
 	BREADTH_H_N_ADD,
 	BREADTH_H_ETH,
-	BREADTH_H_ENGL
+	BREADTH_H_ENGL,
+	BREADTH_NONE
 };
 
 struct course_query {
@@ -288,6 +293,8 @@ struct course_query {
 	/* Days of the week */
 	bool days[6];
 };
+
+void course_query_init(struct course_query *query);
 
 struct course {
 	struct course_result *next;

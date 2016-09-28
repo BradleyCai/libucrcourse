@@ -100,7 +100,8 @@ char *SUBJECT_AREAS[] = {
 	"STAT",
 	"TFDP",
 	"URST",
-	"VNM "
+	"VNM ",
+	""
 };
 
 char *CLASS_TYPES[] = {
@@ -127,7 +128,8 @@ char *CLASS_TYPES[] = {
 	"ACT",
 	"DEM",
 	"ODL",
-	"W&S"
+	"W&S",
+	""
 };
 
 char *COURSE_LOCATIONS[] = {
@@ -165,14 +167,16 @@ char *COURSE_LOCATIONS[] = {
 	"ULB",
 	"UNLH",
 	"UV",
-	"CHUNG"
+	"CHUNG",
+	""
 };
 
 char *COURSE_RANGES[] = {
 	"LGraduate",
 	"UGraduate",
 	"Graduate",
-	"PostDoc"
+	"PostDoc",
+	""
 };
 
 char *BREADTH_COURSES[] = {
@@ -214,6 +218,7 @@ char *BREADTH_COURSES[] = {
 	"H-N-BS",
 	"H-N-ADD",
 	"H-ETH",
-	"H-ENGL"
+	"H-ENGL",
+	""
 };
 

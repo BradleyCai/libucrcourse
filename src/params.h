@@ -10,23 +10,10 @@
 
 #include "ucrcourse.h"
 
-struct query_params {
-	/* Same names as actual parameters */
-	const char drp_term[4];
-	const char *drp_subjectArea;
-	const char *txtbx_courseTitle;
-	const char *txt_instructor;
-	const char *txtbx_courseNumber;
-	const char drp_startTime[6];
-	const char drp_fullOpenClasses[2];
-	const char *drp_courseRange;
-	const char *drp_location;
-	const char *drp_breadth;
-	bool cbGraduateQuant;
-};
+#define HOUR_NONE	25
 
-int query_to_params(struct query_params *params, const struct course_query *query);
-char *params_to_string(const struct query_params *params);
+void set_default_term(struct course_query *query);
+char *query_to_string(const struct course_query *query);
 
 #endif /* __PARAMS_H */
 

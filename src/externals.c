@@ -12,20 +12,32 @@
 #include "request.h"
 #include "ucrcourse.h"
 
+void course_query_init(struct course_query *query)
+{
+	set_default_term(query);
+	query->subject_area = SUBJECT_NONE;
+	query->course_title = "";
+	query->instructor = "";
+	query->course_number = "";
+	query->start_hour = HOUR_NONE;
+	query->course_status = STATUS_OPEN;
+	query->course_range = RANGE_NONE;
+	query->class_type = CLASS_NONE;
+	query->course_location = BUILDING_NONE;
+	query->breadth = BREADTH_NONE;
+	query->graduate_quantitative = false;
+	query->days[MONDAY] = false;
+	query->days[TUESDAY] = false;
+	query->days[WEDNESDAY] = false;
+	query->days[THURSDAY] = false;
+	query->days[FRIDAY] = false;
+	query->days[SATURDAY] = false;
+}
+
 char *get_raw_ucr_courses_request(const struct course_query *query)
 {
-	struct query_params params;
-	char *param_str;
-	if (query_to_params(&params, query)) {
-		return NULL;
-	}
-
-	param_str = params_to_string(&params);
-	if (!param_str) {
-		return NULL;
-	}
-
-	return do_request(param_str);
+	char *params = query_to_string(query);
+	return params ? do_request(params) : NULL;
 }
 
 char *get_raw_ucr_courses_html(const struct course_query *query)
