@@ -17,7 +17,9 @@ Compiled library artifacts should now be available for use in your applications.
 
 ### API
 The APIs are located in the header file `ucrcourse.h`, which contains all the necessary symbols needed for using the library. The following functions are defined:
-`int ucrcourse_init(void)`
+```c
+int ucrcourse_init(void)
+```
 This must be called before any of the other library functions are called. Returns zero on success.
 
 ```c
@@ -67,13 +69,13 @@ If an error occurred, `NULL` is returned and `errno` is set to indicate the erro
 ### API Errors
 When an error occurs, then the special value `errno` is set. If the error that resulted is not part of the C
 standard library then a library error value is returned instead. The values are defined in `ucrcourse.h`. Each name and its meaning is listed here:
-`UCRCOURSE_ERR_OK` - (not really an error) means the operation succeeded
-`UCRCOURSE_ERR_INTERNAL` - a generic error that is returned if there is no better error to return
-`UCRCOURSE_ERR_CURL` - a generic error that is returned when libcurl encounters an issue
-`UCRCOURSE_ERR_INVALID_ARG` - an argument provided to the library is invalid
-`UCRCOURSE_ERR_CONNECT` - a connection could not be established
-`UCRCOURSE_ERR_SERVER` - the remote server was not able to respond to the query
-`UCRCOURSE_ERR_RESPONSE` - the remote server responded, but the data was malformed
+* `UCRCOURSE_ERR_OK` - (not really an error) means the operation succeeded
+* `UCRCOURSE_ERR_INTERNAL` - a generic error that is returned if there is no better error to return
+* `UCRCOURSE_ERR_CURL` - a generic error that is returned when libcurl encounters an issue
+* `UCRCOURSE_ERR_INVALID_ARG` - an argument provided to the library is invalid
+* `UCRCOURSE_ERR_CONNECT` - a connection could not be established
+* `UCRCOURSE_ERR_SERVER` - the remote server was not able to respond to the query
+* `UCRCOURSE_ERR_RESPONSE` - the remote server responded, but the data was malformed
 
 ### Limitations
 This library does not support fetching records from before 1999. Since records are scraped from a remote sight,
