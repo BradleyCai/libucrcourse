@@ -15,13 +15,15 @@ char *get_blob(const char *filename)
 	FILE *fh;
 	long fsize;
 	char *blob;
+	int ret;
 
 	fh = fopen(filename, "r");
 	if (!fh) {
 		return NULL;
 	}
 
-	if (fseek(fh, 0, SEEK_END)) {
+	ret = fseek(fh, 0, SEEK_END);
+	if (ret) {
 		return NULL;
 	}
 
@@ -44,5 +46,25 @@ char *get_blob(const char *filename)
 	fclose(fh);
 	blob[fsize] = '\0';
 	return blob;
+}
+
+int set_blob(const char *filename, const char *blob, size_t length)
+{
+	FILE *fh;
+	int ret;
+
+	fh = fopen(filename, "w");
+	if (!fh) {
+		return -1;
+	}
+
+	ret = fwrite(blob, length, 1, fh);
+	if (!ret) {
+		fclose(fh);
+		return -1;
+	}
+
+	fclose(fh);
+	return 0;
 }
 

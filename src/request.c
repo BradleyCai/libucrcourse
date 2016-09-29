@@ -45,7 +45,6 @@ char *do_request(const struct course_query *query)
 		return NULL;
 	}
 
-#if 1
 	params = query_to_string(curlh, query);
 	if (!params) {
 		int errsave = errno;
@@ -53,10 +52,6 @@ char *do_request(const struct course_query *query)
 		errno = errsave;
 		return NULL;
 	}
-#else
-	params = get_blob("blob/params.dat");
-#endif
-
 	printf("params: %s\n", params);
 
 	curl_easy_setopt(curlh, CURLOPT_URL, POST_URL);
