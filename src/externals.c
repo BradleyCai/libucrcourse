@@ -17,8 +17,8 @@
 #include "ucrcourse.h"
 
 #define DEFAULT_INSTRUCTOR			"Instructor"
-#define DEFAULT_COURSE_NUMBER			"Course%23"
-#define DEFAULT_COURSE_TITLE			"Course%20Title"
+#define DEFAULT_COURSE_NUMBER			"Course#"
+#define DEFAULT_COURSE_TITLE			"Course Title"
 
 int ucrcourse_init(void)
 {
@@ -80,10 +80,7 @@ void ucrcourse_query_init(struct course_query *query)
 
 char *ucrcourse_get_raw(const struct course_query *query)
 {
-	char *params = query_to_string(query);
-	char *result = params ? do_request(params) : NULL;
-	free(params);
-	return result;
+	return do_request(query);
 }
 
 char *ucrcourse_get_html(const struct course_query *query)

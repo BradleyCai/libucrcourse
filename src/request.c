@@ -10,6 +10,7 @@
 #include <curl/curl.h>
 
 #include "blob.h"
+#include "params.h"
 #include "request.h"
 #include "string_buffer.h"
 #include "ucrcourse.h"
@@ -25,12 +26,13 @@ static size_t read_data(void *ptr, size_t size, size_t nmemb, void *arg)
 	return size * nmemb;
 }
 
-char *do_request(const char *params)
+char *do_request(const struct course_query *query)
 {
 	CURL *curlh;
 	CURLcode res;
 	struct string_buffer strbuf;
 	int ret;
+	char *params;
 
 	ret = strbuf_init(&strbuf, DEFAULT_CAPACITY);
 	if (ret) {
@@ -43,7 +45,18 @@ char *do_request(const char *params)
 		return NULL;
 	}
 
+#if 1
+	params = query_to_string(curlh, query);
+	if (!params) {
+		int errsave = errno;
+		curl_easy_cleanup(curlh);
+		errno = errsave;
+		return NULL;
+	}
+#else
 	params = get_blob("blob/params.dat");
+#endif
+
 	printf("params: %s\n", params);
 
 	curl_easy_setopt(curlh, CURLOPT_URL, POST_URL);
@@ -51,7 +64,7 @@ char *do_request(const char *params)
 	curl_easy_setopt(curlh, CURLOPT_WRITEDATA, (void *)&strbuf);
 	curl_easy_setopt(curlh, CURLOPT_POST, TRUE);
 	curl_easy_setopt(curlh, CURLOPT_POSTFIELDS, params);
-	curl_easy_setopt(curlh, CURLOPT_USERAGENT, "Mozilla/5.0");
+	curl_easy_setopt(curlh, CURLOPT_USERAGENT, "Mozilla/5.0 libucrcourse-client");
 	curl_easy_setopt(curlh, CURLOPT_ENCODING, "gzip");
 	curl_easy_setopt(curlh, CURLOPT_FAILONERROR, TRUE);
 #ifndef NDEBUG
