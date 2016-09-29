@@ -16,6 +16,10 @@
 #include "request.h"
 #include "ucrcourse.h"
 
+#define DEFAULT_INSTRUCTOR			"Instructor"
+#define DEFAULT_COURSE_NUMBER			"Course%23"
+#define DEFAULT_COURSE_TITLE			"Course%20Title"
+
 int ucrcourse_init(void)
 {
 	CURLcode res = curl_global_init(CURL_GLOBAL_DEFAULT);
@@ -56,9 +60,9 @@ void ucrcourse_query_init(struct course_query *query)
 {
 	set_default_term(query);
 	query->subject_area = SUBJECT_NONE;
-	query->course_title = "";
-	query->instructor = "";
-	query->course_number = "";
+	query->course_title = DEFAULT_COURSE_TITLE;
+	query->instructor = DEFAULT_INSTRUCTOR;
+	query->course_number = DEFAULT_COURSE_NUMBER;
 	query->start_hour = HOUR_NONE;
 	query->course_status = STATUS_OPEN;
 	query->course_range = RANGE_NONE;

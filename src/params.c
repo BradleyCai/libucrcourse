@@ -117,25 +117,30 @@ char *query_to_string(const struct course_query *query)
 		return NULL;
 	}
 
-	/*
-	blob = get_blob("blob/viewstate.dat");
-	if (!blob) return NULL;
-	add_param(&strbuf, "__VIEWSTATE", blob);
-	free(blob);
+	add_param(&strbuf, "ScriptManager1", "UpdatePanel1%7Cbtn_search");
+	add_param(&strbuf, "__ASYNCPOST", "true");
+	add_param(&strbuf, "__EVENTTARGET", "");
+	add_param(&strbuf, "__EVENTARGUMENT", "");
 
+	/*
 	blob = get_blob("blob/eventvalidation.dat");
 	if (!blob) return NULL;
 	add_param(&strbuf, "__EVENTVALIDATION", blob);
 	free(blob);
 	*/
 
-	add_param(&strbuf, "__EVENTTARGET", "");
-	add_param(&strbuf, "__EVENTARGUMENT", "");
 	add_param(&strbuf, "__LASTFOCUS", "");
 	add_param(&strbuf, "__SCROLLPOSITIONX", "0");
 	add_param(&strbuf, "__SCROLLPOSITIONY", "0");
-	add_param(&strbuf, "__ASYNCPOST", "true");
-	add_param(&strbuf, "btn_search", " Search >>");
+
+	/*
+	blob = get_blob("blob/viewstate.dat");
+	if (!blob) return NULL;
+	add_param(&strbuf, "__VIEWSTATE", blob);
+	free(blob);
+	*/
+
+	add_param(&strbuf, "btn_search", "%C2%A0Search%20%3E%3E\n");
 
 	set_term_code(buf, query->quarter, query->year);
 	add_param(&strbuf, "drp_term", buf);
