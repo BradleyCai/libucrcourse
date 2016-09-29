@@ -15,6 +15,14 @@ extern "C" {
 #include <stdbool.h>
 #include <stddef.h>
 
+#define UCRCOURSE_ERR_OK		0
+#define UCRCOURSE_ERR_INTERNAL		-100
+#define UCRCOURSE_ERR_CURL		-101
+#define UCRCOURSE_ERR_INVALID_ARG	-102
+#define UCRCOURSE_ERR_CONNECT		-103
+#define UCRCOURSE_ERR_SERVER		-104
+#define UCRCOURSE_ERR_RESPONSE		-105
+
 enum quarter {
 	FALL_QUARTER,
 	WINTER_QUARTER,
@@ -294,11 +302,7 @@ struct course_query {
 	bool days[6];
 };
 
-void course_query_init(struct course_query *query);
-
 struct course {
-	struct course_result *next;
-
 	/* Course number */
 	const char *course_number;
 
@@ -352,10 +356,15 @@ struct course_results {
 	size_t length;
 };
 
-char *get_raw_ucr_courses_request(const struct course_query *query);
-char *get_raw_ucr_courses_html(const struct course_query *query);
-struct course_results *get_ucr_courses(const struct course_query *query);
-void destroy_course_result(struct course_results *results);
+int ucrcourse_init(void);
+void ucrcourse_cleanup(void);
+const char *ucrcourse_strerror(int error);
+
+void ucrcourse_query_init(struct course_query *query);
+void ucrcourse_results_destroy(struct course_results *results);
+char *ucrcourse_get_raw(const struct course_query *query);
+char *ucrcourse_get_html(const struct course_query *query);
+struct course_results *ucrcourse_get_courses(const struct course_query *query);
 
 #ifdef __cplusplus
 }

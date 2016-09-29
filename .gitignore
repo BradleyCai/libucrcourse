@@ -6,8 +6,9 @@ build
 *.dylib
 
 # Debugging
+core
 core.*
-vgcore*
+vgcore.*
 
 # Misc
 .*.swp

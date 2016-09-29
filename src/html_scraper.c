@@ -5,11 +5,15 @@
  * Available for use under the terms of the MIT License.
  */
 
+#include <errno.h>
 #include <stdlib.h>
 #include <string.h>
 
 #include "html_scraper.h"
 #include "ucrcourse.h"
+
+#define ERROR_KEY_NAME			"error"
+#define ERROR_KEY_LENGTH		5
 
 #define HTML_KEY_NAME			"UpdatePanel3"
 #define HTML_KEY_LENGTH			12
@@ -43,12 +47,13 @@ char *extract_html(const char *response)
 		if (response[i] == '|') {
 			if (html.start == 0) {
 				i++;
-				if (strncmp(response + i, HTML_KEY_NAME, HTML_KEY_LENGTH)) {
-					continue;
+				if (!strncmp(response + i, ERROR_KEY_NAME, ERROR_KEY_LENGTH)) {
+					errno = UCRCOURSE_ERR_SERVER;
+					return NULL;
+				} else if (!strncmp(response + i, HTML_KEY_NAME, HTML_KEY_LENGTH)) {
+					i += HTML_KEY_LENGTH;
+					html.start = i;
 				}
-
-				i += HTML_KEY_LENGTH;
-				html.start = i;
 			} else {
 				html.length = i - html.start;
 				break;
@@ -57,6 +62,7 @@ char *extract_html(const char *response)
 	}
 
 	if (html.length == 0) {
+		errno = UCRCOURSE_ERR_RESPONSE;
 		return NULL;
 	}
 

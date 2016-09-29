@@ -8,7 +8,7 @@
 #ifndef __REQUEST_H
 #define __REQUEST_H
 
-char *do_request(const char *data);
+char *do_request(const char *params);
 
 #endif /* __REQUEST_H */
 

@@ -16,5 +16,12 @@ struct string_buffer {
     size_t capacity;
 };
 
+int strbuf_init(struct string_buffer *strbuf, size_t capacity);
+void strbuf_destroy(struct string_buffer *strbuf);
+int strbuf_append(struct string_buffer *strbuf, const char *str);
+int strbuf_append_char(struct string_buffer *strbuf, char ch);
+int strbuf_append_data(struct string_buffer *strbuf, const char *data, size_t len);
+int strbuf_resize(struct string_buffer *strbuf, size_t new_capacity);
+
 #endif /* __STRING_BUFFER_H */
 

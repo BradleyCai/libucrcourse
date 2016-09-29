@@ -97,45 +97,57 @@ void set_default_term(struct course_query *query)
 
 static void add_param(struct string_buffer *string, const char *key, const char *value)
 {
+	if (string->length > 0) {
+		strbuf_append_char(string, '&');
+	}
+
+	strbuf_append(string, key);
+	strbuf_append_char(string, '=');
+	strbuf_append(string, value);
 }
 
 char *query_to_string(const struct course_query *query)
 {
-	struct string_buffer string;
+	struct string_buffer strbuf;
 	char buf[6];
 
-	add_param(&string, "__LASTFOCUS", "");
-	add_param(&string, "__EVENTTARGET", "");
-	add_param(&string, "__EVENTARGUMENT", "");
-	/* add_param(&string, "__VIEWSTATE", " TODO"); */
-	add_param(&string, "__SCROLLPOSITIONX", "0");
-	add_param(&string, "__SCROLLPOSITIONY", "0");
-	/* add_param(&string, "__EVENTVALIDATION", "TODO"); */
-	add_param(&string, "__ASYNCPOST", "true");
-	add_param(&string, "btn_search", " Search >>");
+	if (strbuf_init(&strbuf, 1024)) {
+		return NULL;
+	}
+
+	add_param(&strbuf, "__LASTFOCUS", "");
+	add_param(&strbuf, "__EVENTTARGET", "");
+	add_param(&strbuf, "__EVENTARGUMENT", "");
+	/* add_param(&strbuf, "__VIEWSTATE", " TODO"); */
+	add_param(&strbuf, "__SCROLLPOSITIONX", "0");
+	add_param(&strbuf, "__SCROLLPOSITIONY", "0");
+	/* add_param(&strbuf, "__EVENTVALIDATION", "TODO"); */
+	add_param(&strbuf, "__ASYNCPOST", "true");
+	add_param(&strbuf, "btn_search", " Search >>");
 
 	set_term_code(buf, query->quarter, query->year);
-	add_param(&string, "drp_term", buf);
-	add_param(&string, "drp_subjectArea", SUBJECT_AREAS[query->subject_area]);
-	add_param(&string, "txtbx_courseTitle", query->course_title);
-	add_param(&string, "txt_instructor", query->instructor);
-	add_param(&string, "txtbx_courseNumber", query->course_number);
+	add_param(&strbuf, "drp_term", buf);
+	add_param(&strbuf, "drp_subjectArea", SUBJECT_AREAS[query->subject_area]);
+	add_param(&strbuf, "txtbx_courseTitle", query->course_title);
+	add_param(&strbuf, "txt_instructor", query->instructor);
+	add_param(&strbuf, "txtbx_courseNumber", query->course_number);
 	set_start_time(buf, query->start_hour);
-	add_param(&string, "drp_startTime", buf);
+	add_param(&strbuf, "drp_startTime", buf);
 	set_course_status(buf, query->course_status);
-	add_param(&string, "drp_fullOpenClasses", buf);
-	add_param(&string, "drp_courseRange", COURSE_RANGES[query->course_range]);
-	add_param(&string, "drp_location", COURSE_LOCATIONS[query->course_location]);
-	add_param(&string, "drp_breadth", BREADTH_COURSES[query->breadth]);
+	add_param(&strbuf, "drp_fullOpenClasses", buf);
+	add_param(&strbuf, "drp_courseRange", COURSE_RANGES[query->course_range]);
+	add_param(&strbuf, "drp_location", COURSE_LOCATIONS[query->course_location]);
+	add_param(&strbuf, "drp_breadth", BREADTH_COURSES[query->breadth]);
 
-	if (query->graduate_quantitative) add_param(&string, "cbGraduateQuant", "on");
-	if (query->days[MONDAY]) add_param(&string, "chkbx_mon", "on");
-	if (query->days[TUESDAY]) add_param(&string, "chkbx_tue", "on");
-	if (query->days[WEDNESDAY]) add_param(&string, "chkbx_wed", "on");
-	if (query->days[THURSDAY]) add_param(&string, "chkbx_thur", "on");
-	if (query->days[FRIDAY]) add_param(&string, "chkbx_fri", "on");
-	if (query->days[SATURDAY]) add_param(&string, "chkbx_sat", "on");
+	if (query->graduate_quantitative) add_param(&strbuf, "cbGraduateQuant", "on");
+	if (query->days[MONDAY]) add_param(&strbuf, "chkbx_mon", "on");
+	if (query->days[TUESDAY]) add_param(&strbuf, "chkbx_tue", "on");
+	if (query->days[WEDNESDAY]) add_param(&strbuf, "chkbx_wed", "on");
+	if (query->days[THURSDAY]) add_param(&strbuf, "chkbx_thur", "on");
+	if (query->days[FRIDAY]) add_param(&strbuf, "chkbx_fri", "on");
+	if (query->days[SATURDAY]) add_param(&strbuf, "chkbx_sat", "on");
 
-	return string.data;
+	strbuf_append_char(&strbuf, '\0');
+	return strbuf.data;
 }
 
