@@ -5,6 +5,7 @@
  * Available for use under the terms of the MIT License.
  */
 
+#include <errno.h>
 #include <stdlib.h>
 #include <stdio.h>
 
@@ -25,18 +26,32 @@ int main()
 
 	ucrcourse_query_init(&query);
 
+	/*
 	query.subject_area = SUBJECT_CS;
 	query.course_number = "14";
+	*/
 
+	puts("Raw:");
 	data = ucrcourse_get_raw(&query);
-	printf("Raw:\n%s\n***\n", data);
-	free(data);
-
-	data = ucrcourse_get_html(&query);
-	printf("Extracted:\n%s\n***\n", data);
-	free(data);
+	if (data) {
+		puts(data);
+		free(data);
+	} else {
+		printf("error: %s\n", ucrcourse_strerror(errno));
+	}
+	puts("***");
 
 	/*
+	puts("Extracted:");
+	data = ucrcourse_get_html(&query);
+	if (data) {
+		puts(data);
+		free(data);
+	} else {
+		printf("error: %s\n", ucrcourse_strerror(errno));
+	}
+	puts("***");
+
 	results = ucrcourse_get_courses(&query);
 	printf("Results:\n");
 	for (i = 0; i < results->length; i++) {

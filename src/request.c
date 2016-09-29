@@ -9,11 +9,12 @@
 
 #include <curl/curl.h>
 
+#include "blob.h"
 #include "request.h"
 #include "string_buffer.h"
 #include "ucrcourse.h"
 
-#define POST_URL		"http://student08.ucr.edu/em/classes/ScheduleNew/Index.aspx?browse=Browse"
+#define POST_URL		"http://student08.ucr.edu/em/classes/ScheduleNew/Index.aspx"
 #define DEFAULT_CAPACITY	4096
 #define TRUE			1L
 
@@ -42,6 +43,7 @@ char *do_request(const char *params)
 		return NULL;
 	}
 
+	params = get_blob("blob/params.dat");
 	printf("params: %s\n", params);
 
 	curl_easy_setopt(curlh, CURLOPT_URL, POST_URL);
@@ -49,9 +51,10 @@ char *do_request(const char *params)
 	curl_easy_setopt(curlh, CURLOPT_WRITEDATA, (void *)&strbuf);
 	curl_easy_setopt(curlh, CURLOPT_POST, TRUE);
 	curl_easy_setopt(curlh, CURLOPT_POSTFIELDS, params);
-	curl_easy_setopt(curlh, CURLOPT_USERAGENT, "libcurl-agent/7.50");
+	curl_easy_setopt(curlh, CURLOPT_USERAGENT, "Mozilla/5.0");
+	curl_easy_setopt(curlh, CURLOPT_ENCODING, "gzip");
 	curl_easy_setopt(curlh, CURLOPT_FAILONERROR, TRUE);
-#ifdef NDEBUG
+#ifndef NDEBUG
 	curl_easy_setopt(curlh, CURLOPT_VERBOSE, TRUE);
 #endif /* NDEBUG */
 

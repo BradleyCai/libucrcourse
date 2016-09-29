@@ -10,6 +10,7 @@
 #include <stdio.h>
 #include <time.h>
 
+#include "blob.h"
 #include "constants.h"
 #include "params.h"
 #include "string_buffer.h"
@@ -109,19 +110,30 @@ static void add_param(struct string_buffer *string, const char *key, const char 
 char *query_to_string(const struct course_query *query)
 {
 	struct string_buffer strbuf;
+	char *blob;
 	char buf[6];
 
 	if (strbuf_init(&strbuf, 1024)) {
 		return NULL;
 	}
 
-	add_param(&strbuf, "__LASTFOCUS", "");
+	/*
+	blob = get_blob("blob/viewstate.dat");
+	if (!blob) return NULL;
+	add_param(&strbuf, "__VIEWSTATE", blob);
+	free(blob);
+
+	blob = get_blob("blob/eventvalidation.dat");
+	if (!blob) return NULL;
+	add_param(&strbuf, "__EVENTVALIDATION", blob);
+	free(blob);
+	*/
+
 	add_param(&strbuf, "__EVENTTARGET", "");
 	add_param(&strbuf, "__EVENTARGUMENT", "");
-	/* add_param(&strbuf, "__VIEWSTATE", " TODO"); */
+	add_param(&strbuf, "__LASTFOCUS", "");
 	add_param(&strbuf, "__SCROLLPOSITIONX", "0");
 	add_param(&strbuf, "__SCROLLPOSITIONY", "0");
-	/* add_param(&strbuf, "__EVENTVALIDATION", "TODO"); */
 	add_param(&strbuf, "__ASYNCPOST", "true");
 	add_param(&strbuf, "btn_search", " Search >>");
 
