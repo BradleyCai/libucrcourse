@@ -125,6 +125,7 @@ static int add_param(struct string_buffer *string, CURL *curlh, const char *key,
 		errno = errsave;
 		return -1;
 	}
+	curl_free(escaped);
 
 	return 0;
 

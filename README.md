@@ -60,11 +60,12 @@ response is returned to the user. The string was created using `malloc` and can 
 If an error occurred, `NULL` is returned and `errno` is set to indicate the error.
 
 ```c
-char *ucrcourse_get_html(const struct course_query *query)
+struct course_html_parts ucrcourse_get_html(const struct course_query *query)
 ```
-This is similar to `ucrcourse_get_raw`, except that it extracts the HTML from the raw response. The string
-is also created using `malloc` and must be freed when it is no longer in use.
-If an error occurred, `NULL` is returned and `errno` is set to indicate the error.
+This is similar to `ucrcourse_get_raw`, except that it extracts the HTML from the raw response. Two
+different strings are produced, which are returned in a struct. Both strings are created by `malloc`
+and must be freed when no longer in use.
+If an error occurred, both strings will be `NULL` and `errno` is set to indicate the error.
 
 ### API Errors
 When an error occurs, then the special value `errno` is set. If the error that resulted is not part of the C

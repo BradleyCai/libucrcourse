@@ -356,6 +356,11 @@ struct course_results {
 	size_t length;
 };
 
+struct course_html_parts {
+	char *listings;
+	char *details;
+};
+
 int ucrcourse_init(void);
 void ucrcourse_cleanup(void);
 const char *ucrcourse_strerror(int error);
@@ -363,7 +368,7 @@ const char *ucrcourse_strerror(int error);
 void ucrcourse_query_init(struct course_query *query);
 void ucrcourse_results_destroy(struct course_results *results);
 char *ucrcourse_get_raw(const struct course_query *query);
-char *ucrcourse_get_html(const struct course_query *query);
+struct course_html_parts ucrcourse_get_html(const struct course_query *query);
 struct course_results *ucrcourse_get_courses(const struct course_query *query);
 
 #ifdef __cplusplus

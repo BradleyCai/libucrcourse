@@ -83,32 +83,36 @@ char *ucrcourse_get_raw(const struct course_query *query)
 	return do_request(query);
 }
 
-char *ucrcourse_get_html(const struct course_query *query)
+struct course_html_parts ucrcourse_get_html(const struct course_query *query)
 {
-	char *response, *html;
+	struct course_html_parts result;
+	char *response;
 
 	response = ucrcourse_get_raw(query);
 	if (!response) {
-		return NULL;
+		result.listings = NULL;
+		result.details = NULL;
+		return result;
 	}
 
-	html = extract_html(response);
+	extract_html(response, &result.listings, &result.details);
 	free(response);
-	return html;
+	return result;
 }
 
 struct course_results *ucrcourse_get_courses(const struct course_query *query)
 {
+	struct course_html_parts parts;
 	struct course_results *results;
-	char *html;
 
-	html = ucrcourse_get_html(query);
-	if (!html) {
+	parts = ucrcourse_get_html(query);
+	if (!parts.listings) {
 		return NULL;
 	}
 
-	results = scrape_html(html);
-	free(html);
+	results = scrape_html(parts.listings);
+	free(parts.listings);
+	free(parts.details);
 	return results;
 }
 

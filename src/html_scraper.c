@@ -12,11 +12,14 @@
 #include "html_scraper.h"
 #include "ucrcourse.h"
 
-#define ERROR_KEY_NAME			"error"
-#define ERROR_KEY_LENGTH		5
+#define ERROR_NAME			"error"
+#define ERROR_LENGTH			5
 
-#define HTML_KEY_NAME			"UpdatePanel3"
-#define HTML_KEY_LENGTH			12
+#define LISTINGS_NAME			"UpdatePanel1|"
+#define LISTINGS_LENGTH			13
+
+#define DETAILS_NAME			"UpdatePanel3|"
+#define DETAILS_LENGTH			13
 
 struct slice {
 	size_t start;
@@ -30,43 +33,49 @@ static char *copy_slice(const char *str, struct slice slice)
 		return NULL;
 	}
 
-	memcpy(buf, str + slice.start + 1, slice.length - 1);
+	memcpy(buf, str + slice.start, slice.length);
 	buf[slice.length] = '\0';
 	return buf;
 }
 
-char *extract_html(const char *response)
+void extract_html(const char *response, char **listing_html, char **detail_html)
 {
-	struct slice html;
+	struct slice listings, details;
 	size_t i;
 
-	html.start = 0;
-	html.length = 0;
+	listings.start = 0;
+	listings.length = 0;
 
-	for (i = 0; response[i]; i++) {
-		if (response[i] == '|') {
-			if (html.start == 0) {
-				i++;
-				if (!strncmp(response + i, ERROR_KEY_NAME, ERROR_KEY_LENGTH)) {
-					errno = UCRCOURSE_ERR_SERVER;
-					return NULL;
-				} else if (!strncmp(response + i, HTML_KEY_NAME, HTML_KEY_LENGTH)) {
-					i += HTML_KEY_LENGTH;
-					html.start = i;
-				}
-			} else {
-				html.length = i - html.start;
-				break;
+	details.start = 0;
+	details.length = 0;
+
+	*listing_html = NULL;
+	*detail_html = NULL;
+
+	for (i = 1; response[i]; i++) {
+		if (response[i - 1] == '|') {
+			if (!strncmp(response + i, ERROR_NAME, ERROR_LENGTH)) {
+				errno = UCRCOURSE_ERR_SERVER;
+				return;
+			} else if (!strncmp(response + i, LISTINGS_NAME, LISTINGS_LENGTH)) {
+				listings.start = i + LISTINGS_LENGTH;
+			} else if (!strncmp(response + i, DETAILS_NAME, DETAILS_LENGTH)) {
+				details.start = i + DETAILS_LENGTH;
+			} else if (listings.start && !listings.length) {
+				listings.length = i - listings.start;
+			} else if (details.start && !details.length) {
+				details.length = i - details.start;
 			}
 		}
 	}
 
-	if (html.length == 0) {
+	if (listings.length == 0 || details.length == 0) {
 		errno = UCRCOURSE_ERR_RESPONSE;
-		return NULL;
+		return;
 	}
 
-	return copy_slice(response, html);
+	*listing_html = copy_slice(response, listings);
+	*detail_html = copy_slice(response, details);
 }
 
 struct course_results *scrape_html(const char *html)

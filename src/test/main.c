@@ -14,6 +14,7 @@
 int main()
 {
 	struct course_query query;
+	struct course_html_parts html;
 	struct course_results *results;
 	char *data;
 	size_t i;
@@ -26,11 +27,10 @@ int main()
 
 	ucrcourse_query_init(&query);
 
-	/*
 	query.subject_area = SUBJECT_CS;
 	query.course_number = "14";
-	*/
 
+	/*
 	puts("Raw:");
 	data = ucrcourse_get_raw(&query);
 	if (data) {
@@ -40,18 +40,24 @@ int main()
 		printf("error: %s\n", ucrcourse_strerror(errno));
 	}
 	puts("***");
+	*/
 
-	/*
 	puts("Extracted:");
-	data = ucrcourse_get_html(&query);
-	if (data) {
-		puts(data);
-		free(data);
+	html = ucrcourse_get_html(&query);
+	if (html.listings) {
+		puts("\tListings:");
+		puts(html.listings);
+		free(html.listings);
+
+		puts("\tDetails:");
+		puts(html.details);
+		free(html.details);
 	} else {
 		printf("error: %s\n", ucrcourse_strerror(errno));
 	}
 	puts("***");
 
+	/*
 	results = ucrcourse_get_courses(&query);
 	printf("Results:\n");
 	for (i = 0; i < results->length; i++) {

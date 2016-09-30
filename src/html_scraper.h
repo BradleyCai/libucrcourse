@@ -10,7 +10,7 @@
 
 #include "ucrcourse.h"
 
-char *extract_html(const char *response);
+void extract_html(const char *response, char **listing_html, char **detail_html);
 struct course_results *scrape_html(const char *html);
 
 #endif /* __HTML_SCRAPER_H */

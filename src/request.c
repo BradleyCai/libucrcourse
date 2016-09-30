@@ -6,6 +6,7 @@
  */
 
 #include <errno.h>
+#include <stdlib.h>
 
 #include <curl/curl.h>
 
@@ -52,7 +53,6 @@ char *do_request(const struct course_query *query)
 		errno = errsave;
 		return NULL;
 	}
-	printf("params: %s\n", params);
 
 	curl_easy_setopt(curlh, CURLOPT_URL, POST_URL);
 	curl_easy_setopt(curlh, CURLOPT_WRITEFUNCTION, read_data);
@@ -67,6 +67,7 @@ char *do_request(const struct course_query *query)
 #endif /* NDEBUG */
 
 	res = curl_easy_perform(curlh);
+	free(params);
 	curl_easy_cleanup(curlh);
 	if (res != CURLE_OK) {
 		switch (res) {
@@ -89,6 +90,7 @@ char *do_request(const struct course_query *query)
 		return NULL;
 	}
 
+	strbuf_append_char(&strbuf, '\0');
 	return strbuf.data;
 }
 
