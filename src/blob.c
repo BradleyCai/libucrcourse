@@ -7,6 +7,7 @@
 
 #include <stdlib.h>
 #include <stdio.h>
+#include <string.h>
 
 #include "blob.h"
 
@@ -48,10 +49,14 @@ char *get_blob(const char *filename)
 	return blob;
 }
 
-int set_blob(const char *filename, const char *blob, size_t length)
+int save_blob(const char *filename, const char *blob, size_t length)
 {
 	FILE *fh;
 	int ret;
+
+	if (length == 0) {
+		length = strlen(blob);
+	}
 
 	fh = fopen(filename, "w");
 	if (!fh) {

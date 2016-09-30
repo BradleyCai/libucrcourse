@@ -8,8 +8,10 @@
 #ifndef __BLOB_H
 #define __BLOB_H
 
+#include <stddef.h>
+
 char *get_blob(const char *filename);
-int set_blob(const char *filename, const char *blob, size_t length);
+int save_blob(const char *filename, const char *blob, size_t length);
 
 #endif /* __BLOB_H */
 
