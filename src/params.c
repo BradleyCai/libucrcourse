@@ -145,7 +145,6 @@ static int add_param(struct string_buffer *string, CURL *curlh, const char *key,
 char *query_to_string(CURL *curlh, const struct course_query *query)
 {
 	struct string_buffer strbuf;
-	char *blob;
 	char buf[6];
 
 	if (strbuf_init(&strbuf, 1024)) {
@@ -156,33 +155,11 @@ char *query_to_string(CURL *curlh, const struct course_query *query)
 	ADD_PARAM(&strbuf, curlh, "__ASYNCPOST", "true");
 	ADD_PARAM(&strbuf, curlh, "__EVENTTARGET", "");
 	ADD_PARAM(&strbuf, curlh, "__EVENTARGUMENT", "");
-
-	blob = get_blob("blob/eventvalidation.dat");
-	if (!blob) return NULL;
-	if (add_param(&strbuf, curlh, "__EVENTVALIDATION", blob)) {
-		int errsave = errno;
-		strbuf_destroy(&strbuf);
-		free(blob);
-		errno = errsave;
-		return NULL;
-	}
-	free(blob);
-
+	ADD_PARAM(&strbuf, curlh, "__EVENTVALIDATION", blob_event_validation);
 	ADD_PARAM(&strbuf, curlh, "__LASTFOCUS", "");
 	ADD_PARAM(&strbuf, curlh, "__SCROLLPOSITIONX", "0");
 	ADD_PARAM(&strbuf, curlh, "__SCROLLPOSITIONY", "0");
-
-	blob = get_blob("blob/viewstate.dat");
-	if (!blob) return NULL;
-	if (add_param(&strbuf, curlh, "__VIEWSTATE", blob)) {
-		int errsave = errno;
-		strbuf_destroy(&strbuf);
-		free(blob);
-		errno = errsave;
-		return NULL;
-	}
-	free(blob);
-
+	ADD_PARAM(&strbuf, curlh, "__VIEWSTATE", blob_view_state);
 	ADD_PARAM(&strbuf, curlh, "btn_search", "\xc2\xa0Search >>\n");
 
 	set_term_code(buf, query->quarter, query->year);

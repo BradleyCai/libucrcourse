@@ -10,7 +10,7 @@
 
 #include <curl/curl.h>
 
-#include "blob.h"
+#include "file.h"
 #include "params.h"
 #include "request.h"
 #include "string_buffer.h"

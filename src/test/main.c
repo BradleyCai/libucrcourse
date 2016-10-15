@@ -11,7 +11,7 @@
 
 #include <ucrcourse.h>
 
-#include "blob.h"
+#include "file.h"
 
 int main()
 {
@@ -33,7 +33,7 @@ int main()
 	puts("Extracted:");
 	html = ucrcourse_get_html(&query);
 	if (html.listings) {
-		save_blob("/tmp/ammon/html.txt", html.listings, 0);
+		save_file("/tmp/ammon/html.txt", html.listings, 0);
 		free(html.listings);
 	} else {
 		printf("error: %s\n", ucrcourse_strerror(errno));

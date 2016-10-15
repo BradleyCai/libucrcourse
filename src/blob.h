@@ -8,10 +8,16 @@
 #ifndef __BLOB_H
 #define __BLOB_H
 
-#include <stddef.h>
+#undef EXTERN
+#ifndef __BLOB_EXTERN
+# define __BLOB_EXTERN
+# define EXTERN extern
+#else
+# define EXTERN
+#endif /* __BLOB_EXTERN */
 
-char *get_blob(const char *filename);
-int save_blob(const char *filename, const char *blob, size_t length);
+EXTERN const char blob_event_validation[];
+EXTERN const char blob_view_state[];
 
-#endif /* __BLOB_H */
+#endif /* __PARAMS_H */
 
