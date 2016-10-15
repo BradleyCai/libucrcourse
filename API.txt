@@ -1,0 +1,59 @@
+Synopsis
+--------
+The APIs are located in the header file "ucrcourse.h", which contains all the necessary
+symbols needed for using the library.
+
+Functions
+---------
+int ucrcourse_init(void)
+    This initializes the library, and must be called before any other library functions.
+
+    Returns zero on success. If nonzero is returned, the library is not initialized and attempting
+    to invoke any of the other functions here will result in undefined behavior.
+
+void ucrcourse_cleanup(void)
+    De-initializes the library, and must be called when you are done using the library.
+    You must invoke "ucrcourse_init" again before you can use library functions after this.
+
+const char *ucrcourse_strerror(int error)
+    Turns a library error code into a human-readable string. The return value should not be modified.
+    If the error is not from the library, then "strerror" is called on it instead.
+
+void ucrcourse_query_init(struct course_query *query)
+    Initializes a "course_query" object. This will populate all the default fields in the structure.
+
+struct course_results *ucrcourse_get_courses(const struct course_query *query)
+    Takes the given query object and forms it into a properly formatted request for the server. If
+    the query succeeds, then a "course_results" object is returned with all the fields populated that
+    the scraper was able to find.
+
+    If an error occurred, "NULL" is returned and "errno" is set to indicate the error.
+
+void ucrcourse_results_destroy(struct course_results *results)
+    Destroys a "course_results" object, releasing any resources held by the object.
+
+char *ucrcourse_get_raw(const struct course_query *query)
+    This takes a query and performs a lookup. No output interpretation or scraping is performed, and the raw
+    response is returned to the user. The string is created using "malloc" and can be freely modified.
+
+    If an error occurred, "NULL" is returned and "errno" is set to indicate the error.
+
+struct course_html_parts ucrcourse_get_html(const struct course_query *query)
+    This is similar to "ucrcourse_get_raw", except that it extracts the HTML from the raw response.
+    Two different strings are produced, which are returned in a struct. Both strings are created
+    using "malloc" and must be free-d when no longer in use.
+
+    If an error occurred, "NULL" is returned and "errno" is set to indicate the error.
+
+Errors
+------
+When an error occurs, then the special value "errno" is set. If the error that resulted is not part of the C
+standard library then a library error value is returned instead. The values are defined in `ucrcourse.h`. Each name and its meaning is listed here:
+* UCRCOURSE_ERR_OK - (not really an error) means the operation succeeded
+* UCRCOURSE_ERR_INTERNAL - a generic error that is returned if there is no better error to return
+* UCRCOURSE_ERR_CURL - a generic error that is returned when libcurl encounters an issue
+* UCRCOURSE_ERR_INVALID_ARG - an argument provided to the library is invalid
+* UCRCOURSE_ERR_CONNECT - a connection could not be established
+* UCRCOURSE_ERR_SERVER - the remote server was not able to respond to the query
+* UCRCOURSE_ERR_RESPONSE - the remote server responded, but the data was malformed
+
