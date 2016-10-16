@@ -1,5 +1,5 @@
 /*
- * html_scraper.c
+ * extract.c
  *
  * Copyright (C) 2016 Ammon Smith and Bradley Cai
  * Available for use under the terms of the MIT License.
@@ -9,7 +9,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "html_scraper.h"
+#include "extract.h"
 #include "ucrcourse.h"
 
 #define ERROR_NAME			"error"
@@ -76,24 +76,5 @@ void extract_html(const char *response, char **listing_html, char **detail_html)
 
 	*listing_html = copy_slice(response, listings);
 	*detail_html = copy_slice(response, details);
-}
-
-struct course_results *scrape_html(const char *html)
-{
-	struct course_results *results;
-	size_t i;
-
-	results = malloc(sizeof(struct course_results));
-	if (!results) {
-		return NULL;
-	}
-
-	for (i = 0; html[i]; i++) {
-	}
-
-	results->courses = NULL;
-	results->length = 0;
-
-	return results;
 }
 

@@ -11,9 +11,10 @@
 
 #include <curl/curl.h>
 
-#include "html_scraper.h"
+#include "extract.h"
 #include "params.h"
 #include "request.h"
+#include "scraper.h"
 #include "ucrcourse.h"
 
 #define DEFAULT_INSTRUCTOR			"Instructor"
