@@ -314,6 +314,7 @@ struct course {
 
 	/* Course name */
 	const char *course_name;
+	const char *course_title;
 
 	/* Instructor */
 	const char *instructor;
@@ -349,6 +350,8 @@ struct course {
 	const char *co_requisites, *pre_requisites;
 	const char *schedule_notes, *grade_type;
 	const char *catalog_description;
+
+	unsigned short units;
 };
 
 struct course_results {
