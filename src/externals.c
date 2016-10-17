@@ -14,7 +14,7 @@
 #include "extract.h"
 #include "params.h"
 #include "request.h"
-#include "scraper.h"
+#include "scrape.h"
 #include "ucrcourse.h"
 
 #define DEFAULT_INSTRUCTOR			"Instructor"
@@ -127,7 +127,7 @@ void ucrcourse_results_destroy(struct course_results *results)
 
 	for (i = 0; i < results->length; i++) {
 		free((void *)results->courses[i].course_number);
-		free((void *)results->courses[i].course_title);
+		free((void *)results->courses[i].course_name);
 		free((void *)results->courses[i].instructor);
 		free((void *)results->courses[i].pre_requisites);
 		free((void *)results->courses[i].co_requisites);

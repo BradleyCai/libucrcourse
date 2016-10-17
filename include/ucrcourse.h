@@ -310,10 +310,10 @@ struct course {
 	unsigned short section;
 
 	/* Call number */
-	unsigned short call_number;
+	unsigned int call_number;
 
-	/* Course title */
-	const char *course_title;
+	/* Course name */
+	const char *course_name;
 
 	/* Instructor */
 	const char *instructor;
@@ -352,7 +352,7 @@ struct course {
 };
 
 struct course_results {
-	struct course *courses;
+	const struct course *courses;
 	size_t length;
 };
 
