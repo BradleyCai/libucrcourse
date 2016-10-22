@@ -15,6 +15,10 @@ extern "C" {
 #include <stdbool.h>
 #include <stddef.h>
 
+#define UCRCOURSE_VERSION_MAJOR		0
+#define UCRCOURSE_VERSION_MINOR		0
+#define UCRCOURSE_VERSION_PATCH		1
+
 #define UCRCOURSE_ERR_OK		0
 #define UCRCOURSE_ERR_INTERNAL		-100
 #define UCRCOURSE_ERR_CURL		-101
@@ -303,6 +307,9 @@ struct course_query {
 };
 
 struct course {
+	/* Subject area */
+	enum subject_area subject_area;
+
 	/* Course number */
 	const char *course_number;
 
@@ -314,7 +321,7 @@ struct course {
 
 	/* Course name */
 	const char *course_name;
-	const char *course_title;
+	const char *course_id;
 
 	/* Instructor */
 	const char *instructor;
@@ -326,14 +333,13 @@ struct course {
 	bool days[6];
 
 	/* Time */
-	unsigned char start_hour, start_minute;
-	unsigned char end_hour, end_minute;
+	struct {
+		unsigned char start_hour, start_minute;
+		unsigned char end_hour, end_minute;
+	} times;
 
 	/* Available seats */
 	unsigned short available_seats, max_enrollment;
-
-	/* Waitlist */
-	unsigned short on_wait_list, max_wait_list;
 
 	/* Course status */
 	enum course_status status;
@@ -348,10 +354,8 @@ struct course {
 	} final_exam_date;
 
 	const char *co_requisites, *pre_requisites;
-	const char *schedule_notes, *grade_type;
-	const char *catalog_description;
 
-	unsigned short units;
+	unsigned char units;
 };
 
 struct course_results {

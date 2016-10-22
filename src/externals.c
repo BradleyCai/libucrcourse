@@ -128,14 +128,10 @@ void ucrcourse_results_destroy(struct course_results *results)
 	for (i = 0; i < results->length; i++) {
 		free((void *)results->courses[i].course_number);
 		free((void *)results->courses[i].course_name);
+		free((void *)results->courses[i].course_id);
 		free((void *)results->courses[i].instructor);
-		free((void *)results->courses[i].pre_requisites);
 		free((void *)results->courses[i].co_requisites);
 		free((void *)results->courses[i].pre_requisites);
-		free((void *)results->courses[i].schedule_notes);
-		free((void *)results->courses[i].schedule_notes);
-		free((void *)results->courses[i].grade_type);
-		free((void *)results->courses[i].catalog_description);
 	}
 
 	free(results);

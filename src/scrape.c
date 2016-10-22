@@ -7,32 +7,16 @@
 
 #include <errno.h>
 #include <stdlib.h>
+#include <stdio.h>
 #include <string.h>
 
+#include "parse.h"
 #include "scrape.h"
 #include "slice.h"
 #include "string_buffer.h"
 #include "ucrcourse.h"
 
 #define DEFAULT_RESULT_CAPACITY			5
-
-struct course_strings {
-	char *course_name;
-	char *co_requisites;
-	char *instructor;
-	char *units;
-	char *max_enroll;
-	char *pre_requisites;
-	char *final_exam;
-	char *course_type;
-	char *days;
-	char *times;
-	char *available_seats;
-	char *course_status;
-	char *course_title;
-	char *section_number;
-	char *call_number;
-};
 
 static struct course_results *init_course_results(
 	size_t *capacity)
@@ -76,38 +60,6 @@ static int resize_course_results(struct course_results *results, size_t *capacit
 
 	results->courses = new_array;
 	*capacity = new_capacity;
-	return 0;
-}
-
-#define PARSE_INT(output, str)							\
-	do {									\
-		char *ptr;							\
-		errno = 0;							\
-		(output) = strtol((str), &ptr, 10);				\
-		if (errno || !*ptr) {						\
-			return -1;						\
-		}								\
-	} while (0)
-
-static int create_course(struct course *course, const struct course_strings *data)
-{
-	course->course_name = data->course_name;
-	course->co_requisites = data->co_requisites;
-	course->instructor = data->instructor;
-	PARSE_INT(course->units, data->units);
-	PARSE_INT(course->max_enrollment, data->max_enroll);
-	course->pre_requisites = data->pre_requisites;
-	(void)course->final_exam_date;
-	(void)course->class_type;
-	(void)course->days;
-	(void)course->start_hour;
-	(void)course->start_minute;
-	PARSE_INT(course->available_seats, data->available_seats);
-	(void)course->status;
-	course->course_title = data->course_title;
-	PARSE_INT(course->section, data->section_number);
-	PARSE_INT(course->call_number, data->call_number);
-
 	return 0;
 }
 
@@ -175,10 +127,10 @@ static char *find_next(
 #define FINAL_EXAM_START			'>'
 #define FINAL_EXAM_END				'\n'
 
-#define COURSE_TYPE_TRIGGER			"<td"
-#define COURSE_TYPE_LENGTH			3
-#define COURSE_TYPE_START			'>'
-#define COURSE_TYPE_END				'<'
+#define CLASS_TYPE_TRIGGER			"<td"
+#define CLASS_TYPE_LENGTH			3
+#define CLASS_TYPE_START			'>'
+#define CLASS_TYPE_END				'<'
 
 #define DAYS_TRIGGER				"<td"
 #define DAYS_LENGTH				3
@@ -200,10 +152,10 @@ static char *find_next(
 #define COURSE_STATUS_START			'>'
 #define COURSE_STATUS_END			'<'
 
-#define COURSE_TITLE_TRIGGER			"<td"
-#define COURSE_TITLE_LENGTH			3
-#define COURSE_TITLE_START			'>'
-#define COURSE_TITLE_END			'<'
+#define COURSE_ID_TRIGGER			"<td"
+#define COURSE_ID_LENGTH			3
+#define COURSE_ID_START				'>'
+#define COURSE_ID_END				'<'
 
 #define SECTION_NUMBER_TRIGGER			"<td"
 #define SECTION_NUMBER_LENGTH			3
@@ -215,204 +167,205 @@ static char *find_next(
 #define CALL_NUMBER_START			'>'
 #define CALL_NUMBER_END				'<'
 
-static int read_course_data(struct course_strings *course, const char *html, size_t *i)
+static int read_course_data(struct course_strings *data, const char *html, size_t *i)
 {
-	course->course_name = find_next(
+	data->course_name = find_next(
 			html, i, COURSE_NAME_TRIGGER, COURSE_NAME_LENGTH,
 			COURSE_NAME_START, COURSE_NAME_END);
-	if (!course->course_name) {
+	if (!data->course_name) {
 		return -1;
 	}
 
 	/* TODO add signup requirement */
 
-	course->instructor = find_next(
+	data->instructor = find_next(
 			html, i, INSTRUCTOR_TRIGGER, INSTRUCTOR_LENGTH,
 			INSTRUCTOR_START, INSTRUCTOR_END);
-	if (!course->instructor) {
-		free(course->course_name);
-		/* free(course->signup_requirement); */
+	if (!data->instructor) {
+		free(data->course_name);
+		/* free(data->signup_requirement); */
 		return -1;
 	}
 
-	course->units = find_next(
+	data->units = find_next(
 			html, i, UNITS_TRIGGER, UNITS_LENGTH,
 			UNITS_START, UNITS_END);
-	if (!course->units) {
-		free(course->course_name);
-		/* free(course->signup_requirement); */
-		free(course->instructor);
+	if (!data->units) {
+		free(data->course_name);
+		/* free(data->signup_requirement); */
+		free(data->instructor);
 		return -1;
 	}
 
-	course->max_enroll = find_next(
+	data->max_enroll = find_next(
 			html, i, MAX_ENROLL_TRIGGER, MAX_ENROLL_LENGTH,
 			MAX_ENROLL_START, MAX_ENROLL_END);
-	if (!course->max_enroll) {
-		free(course->course_name);
-		/* free(course->signup_requirement); */
-		free(course->instructor);
-		free(course->units);
+	if (!data->max_enroll) {
+		free(data->course_name);
+		/* free(data->signup_requirement); */
+		free(data->instructor);
+		free(data->units);
 		return -1;
 	}
 
-	course->pre_requisites = find_next(
+	data->pre_requisites = find_next(
 			html, i, PREREQUISITES_TRIGGER, PREREQUISITES_LENGTH,
 			PREREQUISITES_START, PREREQUISITES_END);
-	if (!course->pre_requisites) {
-		free(course->course_name);
-		/* free(course->signup_requirement); */
-		free(course->instructor);
-		free(course->units);
-		free(course->max_enroll);
+	if (!data->pre_requisites) {
+		free(data->course_name);
+		/* free(data->signup_requirement); */
+		free(data->instructor);
+		free(data->units);
+		free(data->max_enroll);
 		return -1;
 	}
 
-	course->final_exam = find_next(
+	data->final_exam = find_next(
 			html, i, FINAL_EXAM_TRIGGER, FINAL_EXAM_LENGTH,
 			FINAL_EXAM_START, FINAL_EXAM_END);
-	if (!course->final_exam) {
-		free(course->course_name);
-		/* free(course->signup_requirement); */
-		free(course->instructor);
-		free(course->units);
-		free(course->max_enroll);
-		free(course->pre_requisites);
+	if (!data->final_exam) {
+		free(data->course_name);
+		/* free(data->signup_requirement); */
+		free(data->instructor);
+		free(data->units);
+		free(data->max_enroll);
+		free(data->pre_requisites);
 		return -1;
 	}
 
-	course->course_type = find_next(
-			html, i, COURSE_TYPE_TRIGGER, COURSE_TYPE_LENGTH,
-			COURSE_TYPE_START, COURSE_TYPE_END);
-	if (!course->course_type) {
-		free(course->course_name);
-		/* free(course->signup_requirement); */
-		free(course->instructor);
-		free(course->units);
-		free(course->max_enroll);
-		free(course->pre_requisites);
-		free(course->final_exam);
+	data->class_type = find_next(
+			html, i, CLASS_TYPE_TRIGGER, CLASS_TYPE_LENGTH,
+			CLASS_TYPE_START, CLASS_TYPE_END);
+	if (!data->class_type) {
+		free(data->course_name);
+		/* free(data->signup_requirement); */
+		free(data->instructor);
+		free(data->units);
+		free(data->max_enroll);
+		free(data->pre_requisites);
+		free(data->final_exam);
 		return -1;
 	}
 
-	course->days = find_next(
+	data->days = find_next(
 			html, i, DAYS_TRIGGER, DAYS_LENGTH,
 			DAYS_START, DAYS_END);
-	if (!course->days) {
-		free(course->course_name);
-		/* free(course->signup_requirement); */
-		free(course->instructor);
-		free(course->units);
-		free(course->max_enroll);
-		free(course->pre_requisites);
-		free(course->final_exam);
-		free(course->course_type);
+	if (!data->days) {
+		free(data->course_name);
+		/* free(data->signup_requirement); */
+		free(data->instructor);
+		free(data->units);
+		free(data->max_enroll);
+		free(data->pre_requisites);
+		free(data->final_exam);
+		free(data->class_type);
 		return -1;
 	}
 
-	course->times = find_next(
+	data->times = find_next(
 			html, i, TIMES_TRIGGER, TIMES_LENGTH,
 			TIMES_START, TIMES_END);
-	if (!course->times) {
-		free(course->course_name);
-		/* free(course->signup_requirement); */
-		free(course->instructor);
-		free(course->units);
-		free(course->max_enroll);
-		free(course->pre_requisites);
-		free(course->final_exam);
-		free(course->course_type);
-		free(course->days);
+	if (!data->times) {
+		free(data->course_name);
+		/* free(data->signup_requirement); */
+		free(data->instructor);
+		free(data->units);
+		free(data->max_enroll);
+		free(data->pre_requisites);
+		free(data->final_exam);
+		free(data->class_type);
+		free(data->days);
 		return -1;
 	}
 
-	course->available_seats = find_next(
+	data->available_seats = find_next(
 			html, i, AVAILABLE_SEATS_TRIGGER, AVAILABLE_SEATS_LENGTH,
 			AVAILABLE_SEATS_START, AVAILABLE_SEATS_END);
-	if (!course->available_seats) {
-		free(course->course_name);
-		/* free(course->signup_requirement); */
-		free(course->instructor);
-		free(course->units);
-		free(course->max_enroll);
-		free(course->pre_requisites);
-		free(course->final_exam);
-		free(course->course_type);
-		free(course->days);
-		free(course->times);
+	if (!data->available_seats) {
+		free(data->course_name);
+		/* free(data->signup_requirement); */
+		free(data->instructor);
+		free(data->units);
+		free(data->max_enroll);
+		free(data->pre_requisites);
+		free(data->final_exam);
+		free(data->class_type);
+		free(data->days);
+		free(data->times);
 		return -1;
 	}
 
-	course->course_status = find_next(
+	data->course_status = find_next(
 			html, i, COURSE_STATUS_TRIGGER, COURSE_STATUS_LENGTH,
 			COURSE_STATUS_START, COURSE_STATUS_END);
-	if (!course->course_status) {
-		free(course->course_name);
-		/* free(course->signup_requirement); */
-		free(course->instructor);
-		free(course->units);
-		free(course->max_enroll);
-		free(course->pre_requisites);
-		free(course->final_exam);
-		free(course->course_type);
-		free(course->days);
-		free(course->available_seats);
+	if (!data->course_status) {
+		free(data->course_name);
+		/* free(data->signup_requirement); */
+		free(data->instructor);
+		free(data->units);
+		free(data->max_enroll);
+		free(data->pre_requisites);
+		free(data->final_exam);
+		free(data->class_type);
+		free(data->days);
+		free(data->available_seats);
 		return -1;
 	}
 
-	course->course_title = find_next(
-			html, i, COURSE_TITLE_TRIGGER, COURSE_TITLE_LENGTH,
-			COURSE_TITLE_START, COURSE_TITLE_END);
-	if (!course->course_title) {
-		free(course->course_name);
-		/* free(course->signup_requirement); */
-		free(course->instructor);
-		free(course->units);
-		free(course->max_enroll);
-		free(course->pre_requisites);
-		free(course->final_exam);
-		free(course->course_type);
-		free(course->days);
-		free(course->available_seats);
-		free(course->course_status);
+	data->course_id = find_next(
+			html, i, COURSE_ID_TRIGGER, COURSE_ID_LENGTH,
+			COURSE_ID_START, COURSE_ID_END);
+	if (!data->course_id) {
+		free(data->course_name);
+		/* free(data->signup_requirement); */
+		free(data->instructor);
+		free(data->units);
+		free(data->max_enroll);
+		free(data->pre_requisites);
+		free(data->final_exam);
+		free(data->class_type);
+		free(data->days);
+		free(data->available_seats);
+		free(data->course_status);
 		return -1;
 	}
 
-	course->section_number = find_next(
+	data->section_number = find_next(
 			html, i, SECTION_NUMBER_TRIGGER, SECTION_NUMBER_LENGTH,
 			SECTION_NUMBER_START, SECTION_NUMBER_END);
-	if (!course->section_number) {
-		free(course->course_name);
-		/* free(course->signup_requirement); */
-		free(course->instructor);
-		free(course->units);
-		free(course->max_enroll);
-		free(course->pre_requisites);
-		free(course->final_exam);
-		free(course->course_type);
-		free(course->days);
-		free(course->available_seats);
-		free(course->course_status);
-		free(course->section_number);
+	if (!data->section_number) {
+		free(data->course_name);
+		/* free(data->signup_requirement); */
+		free(data->instructor);
+		free(data->units);
+		free(data->max_enroll);
+		free(data->pre_requisites);
+		free(data->final_exam);
+		free(data->class_type);
+		free(data->days);
+		free(data->available_seats);
+		free(data->course_status);
+		free(data->course_id);
 		return -1;
 	}
 
-	course->call_number = find_next(
+	data->call_number = find_next(
 			html, i, CALL_NUMBER_TRIGGER, CALL_NUMBER_LENGTH,
 			CALL_NUMBER_START, CALL_NUMBER_END);
-	if (!course->call_number) {
-		free(course->course_name);
-		/* free(course->signup_requirement); */
-		free(course->instructor);
-		free(course->units);
-		free(course->max_enroll);
-		free(course->pre_requisites);
-		free(course->final_exam);
-		free(course->course_type);
-		free(course->days);
-		free(course->available_seats);
-		free(course->course_status);
-		free(course->section_number);
+	if (!data->call_number) {
+		free(data->course_name);
+		/* free(data->signup_requirement); */
+		free(data->instructor);
+		free(data->units);
+		free(data->max_enroll);
+		free(data->pre_requisites);
+		free(data->final_exam);
+		free(data->class_type);
+		free(data->days);
+		free(data->available_seats);
+		free(data->course_status);
+		free(data->course_id);
+		free(data->section_number);
 		return -1;
 	}
 
