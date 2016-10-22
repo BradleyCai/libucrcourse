@@ -19,6 +19,10 @@ const char *ucrcourse_strerror(int error)
     Turns a library error code into a human-readable string. The return value should not be modified.
     If the error is not from the library, then "strerror" is called on it instead.
 
+void ucrcourse_perror(const char *message)
+    Prints the given string, then a colon and space, and then the human-readable error message.
+    If the error is not from the library, then "strerror" is called on it instead.
+
 void ucrcourse_query_init(struct course_query *query)
     Initializes a "course_query" object. This will populate all the default fields in the structure.
 

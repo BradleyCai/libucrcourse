@@ -57,6 +57,11 @@ const char *ucrcourse_strerror(int error)
 	}
 }
 
+void ucrcourse_perror(const char *message)
+{
+	fprintf(stderr, "%s: %s\n", message, ucrcourse_strerror(errno));
+}
+
 void ucrcourse_query_init(struct course_query *query)
 {
 	set_default_term(query);

@@ -16,8 +16,8 @@
 int main()
 {
 	struct course_query query;
-	struct course_html_parts html;
 	struct course_results *results;
+	size_t i;
 	int ret;
 
 	ret = ucrcourse_init();
@@ -30,27 +30,20 @@ int main()
 	query.subject_area = SUBJECT_CS;
 	query.course_number = "14";
 
-	puts("Extracted:");
-	html = ucrcourse_get_html(&query);
-	if (html.listings) {
-		save_file("/tmp/ammon/html.txt", html.listings, 0);
-		free(html.listings);
-	} else {
-		printf("error: %s\n", ucrcourse_strerror(errno));
-	}
-	puts("***");
-
-	/*
 	results = ucrcourse_get_courses(&query);
+	if (!results) {
+		ucrcourse_perror("Query failed");
+		return -1;
+	}
+
 	printf("Results:\n");
 	for (i = 0; i < results->length; i++) {
-		struct course *course = &results->courses[i];
-		printf("%s %s - %s\n",
-			course->course_title, course->course_number, course->instructor);
+		const struct course *course = &results->courses[i];
+		printf("%s - %s\n",
+			course->course_id, course->instructor);
 	}
 
 	ucrcourse_results_destroy(results);
-	*/
 	ucrcourse_cleanup();
 
 	return 0;

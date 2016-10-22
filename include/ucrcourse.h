@@ -371,6 +371,7 @@ struct course_html_parts {
 int ucrcourse_init(void);
 void ucrcourse_cleanup(void);
 const char *ucrcourse_strerror(int error);
+void ucrcourse_perror(const char *message);
 
 void ucrcourse_query_init(struct course_query *query);
 void ucrcourse_results_destroy(struct course_results *results);

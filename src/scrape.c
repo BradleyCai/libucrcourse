@@ -396,6 +396,7 @@ struct course_results *scrape_html(const char *html)
 		ret = read_course_data(&course_data, html, &i);
 		if (ret) {
 			destroy_course_results(results);
+			errno = UCRCOURSE_ERR_RESPONSE;
 			return NULL;
 		}
 
@@ -403,6 +404,7 @@ struct course_results *scrape_html(const char *html)
 		ret = create_course(course, &course_data);
 		if (ret) {
 			destroy_course_results(results);
+			errno = UCRCOURSE_ERR_RESPONSE;
 			return NULL;
 		}
 	}
