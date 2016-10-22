@@ -16,3 +16,4 @@ int parse_course_status(enum course_status *status, const char *str);
 
 #endif /* __LONG_PARSE_H */
 
+/* vim: set ft=c: */
